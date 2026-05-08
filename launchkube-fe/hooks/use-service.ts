@@ -51,3 +51,9 @@ export const useGetProjectLogs = (jobId: string) => {
     ),
   );
 };
+
+export const useGetJobs = () => {
+  const trpc = useTRPC();
+
+  return useQuery(trpc.getJobs.queryOptions());
+};

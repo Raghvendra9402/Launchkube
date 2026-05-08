@@ -1,9 +1,3 @@
-import { RepoForm } from "@/components/shared/repo-form";
-
 export default function Home() {
-  return (
-    <div className="h-screen w-full flex items-center justify-center">
-      <RepoForm />
-    </div>
-  );
+  return <div>home</div>;
 }

@@ -50,7 +50,7 @@ export function RepoForm() {
     resolver: zodResolver(formSchema),
     defaultValues: {
       repoUrl: "",
-      envVariables: [{ key: "", value: "" }],
+      envVariables: [],
     },
   });
 
@@ -68,18 +68,16 @@ export function RepoForm() {
   ) => {
     const pasted = e.clipboardData.getData("text");
 
-    // Split by newlines to handle multiple variables
     const lines = pasted
       .split("\n")
       .map((l) => l.trim())
       .filter(Boolean);
 
-    // If any line contains "=", treat it as env variable format
     if (lines.some((l) => l.includes("="))) {
       e.preventDefault();
 
       const parsed = lines.map((line) => {
-        const eqIndex = line.indexOf("="); // use indexOf not split, so VALUE can contain "="
+        const eqIndex = line.indexOf("=");
         if (eqIndex === -1) return { key: line, value: "" };
         return {
           key: line.slice(0, eqIndex).trim(),
@@ -87,7 +85,6 @@ export function RepoForm() {
         };
       });
 
-      // Replace from current index onward with parsed results
       const existing = [...(field.value || [])];
       existing.splice(index, 1, ...parsed);
       field.onChange(existing);
@@ -117,6 +114,7 @@ export function RepoForm() {
                     id="repo-form-title"
                     aria-invalid={fieldState.invalid}
                     placeholder="Enter your repo url that you want to deploy."
+                    autoComplete="off"
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />

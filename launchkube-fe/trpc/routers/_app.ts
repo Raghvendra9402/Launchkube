@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { baseProcedure, createTRPCRouter } from "../init";
+import { baseProcedure, createTRPCRouter, protectedProcedure } from "../init";
 import { SendMessageCommand } from "@aws-sdk/client-sqs";
 import { getSQSClient } from "@/lib/sqs";
 import prisma from "@/lib/db";
 
 export const appRouter = createTRPCRouter({
-  send: baseProcedure
+  send: protectedProcedure
     .input(
       z.object({
         repoUrl: z.url(),
@@ -22,7 +22,7 @@ export const appRouter = createTRPCRouter({
           .optional(),
       }),
     )
-    .mutation(async ({ input }) => {
+    .mutation(async ({ input, ctx }) => {
       const { repoUrl, envVariables } = input;
 
       const jobId = crypto.randomUUID();
@@ -30,13 +30,13 @@ export const appRouter = createTRPCRouter({
       await prisma.job.create({
         data: {
           id: jobId,
+          userId: ctx.auth.user.id,
           repoUrl,
           status: "PENDING",
         },
       });
 
-      const qUrl =
-        "https://sqs.ap-south-1.amazonaws.com/864899840088/ez-deploy-queue";
+      const qUrl = process.env.AWS_QUEUE_URL;
 
       const command = {
         QueueUrl: qUrl,
@@ -55,7 +55,7 @@ export const appRouter = createTRPCRouter({
       };
     }),
 
-  getStatus: baseProcedure
+  getStatus: protectedProcedure
     .input(z.object({ jobId: z.string() }))
     .query(async ({ input }) => {
       return prisma.job.findFirst({
@@ -65,7 +65,7 @@ export const appRouter = createTRPCRouter({
       });
     }),
 
-  getLogs: baseProcedure
+  getLogs: protectedProcedure
     .input(
       z.object({
         jobId: z.string(),
@@ -82,5 +82,13 @@ export const appRouter = createTRPCRouter({
         take: 500,
       });
     }),
+
+  getJobs: protectedProcedure.query(({ ctx }) => {
+    return prisma.job.findMany({
+      where: {
+        userId: ctx.auth.user.id,
+      },
+    });
+  }),
 });
 export type AppRouter = typeof appRouter;

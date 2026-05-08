@@ -28,6 +28,7 @@ export type JobMinAggregateOutputType = {
   id: string | null
   repoUrl: string | null
   status: $Enums.JobStatus | null
+  userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type JobMaxAggregateOutputType = {
   id: string | null
   repoUrl: string | null
   status: $Enums.JobStatus | null
+  userId: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type JobCountAggregateOutputType = {
   id: number
   repoUrl: number
   status: number
+  userId: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type JobMinAggregateInputType = {
   id?: true
   repoUrl?: true
   status?: true
+  userId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type JobMaxAggregateInputType = {
   id?: true
   repoUrl?: true
   status?: true
+  userId?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type JobCountAggregateInputType = {
   id?: true
   repoUrl?: true
   status?: true
+  userId?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type JobGroupByOutputType = {
   id: string
   repoUrl: string
   status: $Enums.JobStatus
+  userId: string
   createdAt: Date
   updatedAt: Date
   _count: JobCountAggregateOutputType | null
@@ -180,18 +187,22 @@ export type JobWhereInput = {
   id?: Prisma.StringFilter<"Job"> | string
   repoUrl?: Prisma.StringFilter<"Job"> | string
   status?: Prisma.EnumJobStatusFilter<"Job"> | $Enums.JobStatus
+  userId?: Prisma.StringFilter<"Job"> | string
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   logs?: Prisma.JobLogListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
 
 export type JobOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   repoUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   logs?: Prisma.JobLogOrderByRelationAggregateInput
+  user?: Prisma.UserOrderByWithRelationInput
 }
 
 export type JobWhereUniqueInput = Prisma.AtLeast<{
@@ -201,15 +212,18 @@ export type JobWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.JobWhereInput | Prisma.JobWhereInput[]
   repoUrl?: Prisma.StringFilter<"Job"> | string
   status?: Prisma.EnumJobStatusFilter<"Job"> | $Enums.JobStatus
+  userId?: Prisma.StringFilter<"Job"> | string
   createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
   logs?: Prisma.JobLogListRelationFilter
+  user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
 
 export type JobOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   repoUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.JobCountOrderByAggregateInput
@@ -224,6 +238,7 @@ export type JobScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Job"> | string
   repoUrl?: Prisma.StringWithAggregatesFilter<"Job"> | string
   status?: Prisma.EnumJobStatusWithAggregatesFilter<"Job"> | $Enums.JobStatus
+  userId?: Prisma.StringWithAggregatesFilter<"Job"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Job"> | Date | string
 }
@@ -235,12 +250,14 @@ export type JobCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   logs?: Prisma.JobLogCreateNestedManyWithoutJobInput
+  user: Prisma.UserCreateNestedOneWithoutJobsInput
 }
 
 export type JobUncheckedCreateInput = {
   id: string
   repoUrl: string
   status: $Enums.JobStatus
+  userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
   logs?: Prisma.JobLogUncheckedCreateNestedManyWithoutJobInput
@@ -253,12 +270,14 @@ export type JobUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   logs?: Prisma.JobLogUpdateManyWithoutJobNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutJobsNestedInput
 }
 
 export type JobUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   repoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   logs?: Prisma.JobLogUncheckedUpdateManyWithoutJobNestedInput
@@ -268,6 +287,7 @@ export type JobCreateManyInput = {
   id: string
   repoUrl: string
   status: $Enums.JobStatus
+  userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -284,14 +304,26 @@ export type JobUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   repoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type JobListRelationFilter = {
+  every?: Prisma.JobWhereInput
+  some?: Prisma.JobWhereInput
+  none?: Prisma.JobWhereInput
+}
+
+export type JobOrderByRelationAggregateInput = {
+  _count?: Prisma.SortOrder
 }
 
 export type JobCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   repoUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -300,6 +332,7 @@ export type JobMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   repoUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -308,6 +341,7 @@ export type JobMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   repoUrl?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -317,16 +351,50 @@ export type JobScalarRelationFilter = {
   isNot?: Prisma.JobWhereInput
 }
 
-export type StringFieldUpdateOperationsInput = {
-  set?: string
+export type JobCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutUserInput, Prisma.JobUncheckedCreateWithoutUserInput> | Prisma.JobCreateWithoutUserInput[] | Prisma.JobUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutUserInput | Prisma.JobCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.JobCreateManyUserInputEnvelope
+  connect?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+}
+
+export type JobUncheckedCreateNestedManyWithoutUserInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutUserInput, Prisma.JobUncheckedCreateWithoutUserInput> | Prisma.JobCreateWithoutUserInput[] | Prisma.JobUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutUserInput | Prisma.JobCreateOrConnectWithoutUserInput[]
+  createMany?: Prisma.JobCreateManyUserInputEnvelope
+  connect?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+}
+
+export type JobUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutUserInput, Prisma.JobUncheckedCreateWithoutUserInput> | Prisma.JobCreateWithoutUserInput[] | Prisma.JobUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutUserInput | Prisma.JobCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.JobUpsertWithWhereUniqueWithoutUserInput | Prisma.JobUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.JobCreateManyUserInputEnvelope
+  set?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  disconnect?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  delete?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  connect?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  update?: Prisma.JobUpdateWithWhereUniqueWithoutUserInput | Prisma.JobUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.JobUpdateManyWithWhereWithoutUserInput | Prisma.JobUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.JobScalarWhereInput | Prisma.JobScalarWhereInput[]
+}
+
+export type JobUncheckedUpdateManyWithoutUserNestedInput = {
+  create?: Prisma.XOR<Prisma.JobCreateWithoutUserInput, Prisma.JobUncheckedCreateWithoutUserInput> | Prisma.JobCreateWithoutUserInput[] | Prisma.JobUncheckedCreateWithoutUserInput[]
+  connectOrCreate?: Prisma.JobCreateOrConnectWithoutUserInput | Prisma.JobCreateOrConnectWithoutUserInput[]
+  upsert?: Prisma.JobUpsertWithWhereUniqueWithoutUserInput | Prisma.JobUpsertWithWhereUniqueWithoutUserInput[]
+  createMany?: Prisma.JobCreateManyUserInputEnvelope
+  set?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  disconnect?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  delete?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  connect?: Prisma.JobWhereUniqueInput | Prisma.JobWhereUniqueInput[]
+  update?: Prisma.JobUpdateWithWhereUniqueWithoutUserInput | Prisma.JobUpdateWithWhereUniqueWithoutUserInput[]
+  updateMany?: Prisma.JobUpdateManyWithWhereWithoutUserInput | Prisma.JobUpdateManyWithWhereWithoutUserInput[]
+  deleteMany?: Prisma.JobScalarWhereInput | Prisma.JobScalarWhereInput[]
 }
 
 export type EnumJobStatusFieldUpdateOperationsInput = {
   set?: $Enums.JobStatus
-}
-
-export type DateTimeFieldUpdateOperationsInput = {
-  set?: Date | string
 }
 
 export type JobCreateNestedOneWithoutLogsInput = {
@@ -343,18 +411,76 @@ export type JobUpdateOneRequiredWithoutLogsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.JobUpdateToOneWithWhereWithoutLogsInput, Prisma.JobUpdateWithoutLogsInput>, Prisma.JobUncheckedUpdateWithoutLogsInput>
 }
 
+export type JobCreateWithoutUserInput = {
+  id: string
+  repoUrl: string
+  status: $Enums.JobStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  logs?: Prisma.JobLogCreateNestedManyWithoutJobInput
+}
+
+export type JobUncheckedCreateWithoutUserInput = {
+  id: string
+  repoUrl: string
+  status: $Enums.JobStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  logs?: Prisma.JobLogUncheckedCreateNestedManyWithoutJobInput
+}
+
+export type JobCreateOrConnectWithoutUserInput = {
+  where: Prisma.JobWhereUniqueInput
+  create: Prisma.XOR<Prisma.JobCreateWithoutUserInput, Prisma.JobUncheckedCreateWithoutUserInput>
+}
+
+export type JobCreateManyUserInputEnvelope = {
+  data: Prisma.JobCreateManyUserInput | Prisma.JobCreateManyUserInput[]
+  skipDuplicates?: boolean
+}
+
+export type JobUpsertWithWhereUniqueWithoutUserInput = {
+  where: Prisma.JobWhereUniqueInput
+  update: Prisma.XOR<Prisma.JobUpdateWithoutUserInput, Prisma.JobUncheckedUpdateWithoutUserInput>
+  create: Prisma.XOR<Prisma.JobCreateWithoutUserInput, Prisma.JobUncheckedCreateWithoutUserInput>
+}
+
+export type JobUpdateWithWhereUniqueWithoutUserInput = {
+  where: Prisma.JobWhereUniqueInput
+  data: Prisma.XOR<Prisma.JobUpdateWithoutUserInput, Prisma.JobUncheckedUpdateWithoutUserInput>
+}
+
+export type JobUpdateManyWithWhereWithoutUserInput = {
+  where: Prisma.JobScalarWhereInput
+  data: Prisma.XOR<Prisma.JobUpdateManyMutationInput, Prisma.JobUncheckedUpdateManyWithoutUserInput>
+}
+
+export type JobScalarWhereInput = {
+  AND?: Prisma.JobScalarWhereInput | Prisma.JobScalarWhereInput[]
+  OR?: Prisma.JobScalarWhereInput[]
+  NOT?: Prisma.JobScalarWhereInput | Prisma.JobScalarWhereInput[]
+  id?: Prisma.StringFilter<"Job"> | string
+  repoUrl?: Prisma.StringFilter<"Job"> | string
+  status?: Prisma.EnumJobStatusFilter<"Job"> | $Enums.JobStatus
+  userId?: Prisma.StringFilter<"Job"> | string
+  createdAt?: Prisma.DateTimeFilter<"Job"> | Date | string
+  updatedAt?: Prisma.DateTimeFilter<"Job"> | Date | string
+}
+
 export type JobCreateWithoutLogsInput = {
   id: string
   repoUrl: string
   status: $Enums.JobStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutJobsInput
 }
 
 export type JobUncheckedCreateWithoutLogsInput = {
   id: string
   repoUrl: string
   status: $Enums.JobStatus
+  userId: string
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -381,9 +507,45 @@ export type JobUpdateWithoutLogsInput = {
   status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutJobsNestedInput
 }
 
 export type JobUncheckedUpdateWithoutLogsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  repoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type JobCreateManyUserInput = {
+  id: string
+  repoUrl: string
+  status: $Enums.JobStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type JobUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  repoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  logs?: Prisma.JobLogUpdateManyWithoutJobNestedInput
+}
+
+export type JobUncheckedUpdateWithoutUserInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  repoUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  logs?: Prisma.JobLogUncheckedUpdateManyWithoutJobNestedInput
+}
+
+export type JobUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   repoUrl?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumJobStatusFieldUpdateOperationsInput | $Enums.JobStatus
@@ -426,9 +588,11 @@ export type JobSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = ru
   id?: boolean
   repoUrl?: boolean
   status?: boolean
+  userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   logs?: boolean | Prisma.Job$logsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["job"]>
 
@@ -436,43 +600,55 @@ export type JobSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extension
   id?: boolean
   repoUrl?: boolean
   status?: boolean
+  userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["job"]>
 
 export type JobSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   repoUrl?: boolean
   status?: boolean
+  userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["job"]>
 
 export type JobSelectScalar = {
   id?: boolean
   repoUrl?: boolean
   status?: boolean
+  userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "repoUrl" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
+export type JobOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "repoUrl" | "status" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["job"]>
 export type JobInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   logs?: boolean | Prisma.Job$logsArgs<ExtArgs>
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.JobCountOutputTypeDefaultArgs<ExtArgs>
 }
-export type JobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
-export type JobIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
+export type JobIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
+export type JobIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+}
 
 export type $JobPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Job"
   objects: {
     logs: Prisma.$JobLogPayload<ExtArgs>[]
+    user: Prisma.$UserPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     repoUrl: string
     status: $Enums.JobStatus
+    userId: string
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["job"]>
@@ -870,6 +1046,7 @@ readonly fields: JobFieldRefs;
 export interface Prisma__JobClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   logs<T extends Prisma.Job$logsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Job$logsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$JobLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -902,6 +1079,7 @@ export interface JobFieldRefs {
   readonly id: Prisma.FieldRef<"Job", 'String'>
   readonly repoUrl: Prisma.FieldRef<"Job", 'String'>
   readonly status: Prisma.FieldRef<"Job", 'JobStatus'>
+  readonly userId: Prisma.FieldRef<"Job", 'String'>
   readonly createdAt: Prisma.FieldRef<"Job", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Job", 'DateTime'>
 }
@@ -1158,6 +1336,10 @@ export type JobCreateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.
    */
   data: Prisma.JobCreateManyInput | Prisma.JobCreateManyInput[]
   skipDuplicates?: boolean
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobIncludeCreateManyAndReturn<ExtArgs> | null
 }
 
 /**
@@ -1228,6 +1410,10 @@ export type JobUpdateManyAndReturnArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many Jobs to update.
    */
   limit?: number
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.JobIncludeUpdateManyAndReturn<ExtArgs> | null
 }
 
 /**
