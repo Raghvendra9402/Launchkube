@@ -2,7 +2,13 @@
 
 import { useEffect, useRef } from "react";
 import { useGetProjectLogs, useGetStatus } from "@/hooks/use-service";
-import { CheckCircle, Loader2, TriangleAlert } from "lucide-react";
+import {
+  CheckCheck,
+  CheckCircle,
+  Loader2,
+  Rocket,
+  TriangleAlert,
+} from "lucide-react";
 import Link from "next/link";
 
 interface ProjectPageProps {
@@ -19,86 +25,73 @@ export function ProjectPage({ projectId }: ProjectPageProps) {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [logs]);
 
-  const renderLogs = () => (
-    <div className="w-full bg-black text-white rounded-lg border p-4 h-125 overflow-y-auto font-mono text-sm shadow">
-      {logs?.flatMap((log, logIdx) =>
-        log.message.split("\n").map((line, lineIdx) => {
-          const key = `${logIdx}-${lineIdx}`;
-
-          let color = "text-gray-300";
-          const trimmed = line.trim();
-
-          if (trimmed.startsWith("[ERROR]")) color = "text-red-400";
-          else if (trimmed.startsWith("[INFO]")) color = "text-blue-400";
-          else if (trimmed.startsWith("[WARN]") || trimmed.includes("WARNING"))
-            color = "text-yellow-400";
-          else if (trimmed.includes("DONE")) color = "text-green-400";
-
-          return (
-            <div key={key} className={`${color} whitespace-pre-wrap`}>
-              {line}
-            </div>
-          );
-        }),
-      )}
-      <div ref={bottomRef} />
-    </div>
-  );
-
   return (
-    <div className="flex justify-center items-center min-h-[60vh] px-4">
-      <div className="w-full max-w-3xl space-y-4">
-        {/* STATUS HEADER */}
-        <div className="flex items-center gap-2 text-sm font-medium">
-          {data?.status === "RUNNING" && (
-            <>
-              <Loader2 className="size-5 animate-spin text-blue-500" />
-              <span>Building your project...</span>
-            </>
-          )}
-
-          {data?.status === "FAILED" && (
-            <>
-              <TriangleAlert className="size-5 text-red-500" />
-              <span>Build failed</span>
-            </>
-          )}
-
-          {data?.status === "SUCCESS" && (
-            <>
-              <CheckCircle className="size-5 text-green-500" />
-              <span>Build successful</span>
-            </>
-          )}
-        </div>
-
-        {/* LOGS */}
-        {(data?.status === "RUNNING" || data?.status === "FAILED") &&
-          renderLogs()}
-
-        {/* SUCCESS CARD */}
-        {data?.status === "SUCCESS" && (
-          <div className="p-4 border rounded-lg bg-green-50 text-green-700">
-            <p className="font-medium">Your app is live 🚀</p>
-            <Link href={`https://app-${projectId}.rsxdev.co.in`}>
-              {`https://app-${projectId}.rsxdev.co.in`}
-            </Link>
+    <div className="h-screen flex flex-col gap-y-4 items-center justify-center px-4">
+      <div>
+        {data?.status === "PENDING" && (
+          <div className="flex flex-row items-center gap-x-2">
+            <Rocket className="size-6" />
+            Your project is lined up for deployment
           </div>
         )}
 
-        {/* FALLBACK */}
-        {!data?.status && (
-          <div className="text-center text-muted-foreground">
-            Project not found
+        {data?.status === "RUNNING" && (
+          <div className="flex flex-row items-center gap-x-2">
+            <Loader2 className="size-6 animate-spin" />
+            Your project is building
+          </div>
+        )}
+
+        {data?.status === "FAILED" && (
+          <div className="flex flex-row items-center gap-x-2">
+            <TriangleAlert className="size-6 text-red-500" />
+            Your project has failed.
+          </div>
+        )}
+
+        {data?.status === "SUCCESS" && (
+          <div className="flex flex-row items-center gap-x-2">
+            <CheckCheck className="size-6 text-emerald-400" />
+            Your project is deployed.
             <Link
-              href="/"
-              className="px-4 py-2 rounded border text-sm hover:bg-gray-100"
+              href={`http://app-${projectId}.rsxdev.co.in`}
+              target="_blank"
+              className="text-blue-500 underline"
             >
-              Go Home
+              Visit Your Site
             </Link>
           </div>
         )}
       </div>
+
+      {(data?.status === "RUNNING" || data?.status === "FAILED") && (
+        <div className="w-full max-w-4xl bg-black h-96 rounded-lg border p-4 overflow-y-auto text-sm">
+          {logs?.flatMap((log, logIdx) =>
+            log.message.split("\n").map((line, lineIdx) => {
+              const key = `${logIdx}-${lineIdx}`;
+
+              let color = "text-gray-400";
+              const trimmed = line.trim();
+
+              if (trimmed.startsWith("[ERROR]")) color = "text-red-400";
+              else if (trimmed.startsWith("[INFO]")) color = "text-blue-400";
+              else if (
+                trimmed.startsWith("[WARN]") ||
+                trimmed.includes("WARNING")
+              )
+                color = "text-yellow-400";
+              else if (trimmed.includes("DONE")) color = "text-green-400";
+              return (
+                <div key={key} className={`${color} whitespace-pre-wrap`}>
+                  {line}
+                </div>
+              );
+            }),
+          )}
+
+          <div ref={bottomRef} />
+        </div>
+      )}
     </div>
   );
 }

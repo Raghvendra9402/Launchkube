@@ -7,7 +7,7 @@ import { useGetJobs } from "@/hooks/use-service";
 export default function JobsPage() {
   const { data = [] } = useGetJobs();
   return (
-    <div className="container mx-auto py-10">
+    <div className="py-10 px-4">
       <DataTable columns={columns} data={data} />
     </div>
   );

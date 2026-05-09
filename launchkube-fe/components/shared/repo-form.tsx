@@ -202,6 +202,17 @@ export function RepoForm() {
                 />
               </CollapsibleContent>
             </Collapsible>
+            <p className="text-xs text-muted-foreground font-mono px-1">
+              💡 If deploying a Next.js app, add{" "}
+              <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                output: &quot;standalone&quot;
+              </code>{" "}
+              to your{" "}
+              <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                next.config.ts
+              </code>{" "}
+              for Docker compatibility.
+            </p>
           </FieldGroup>
         </form>
       </CardContent>

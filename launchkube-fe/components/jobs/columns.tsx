@@ -1,9 +1,21 @@
 "use client";
 
 import { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import {
+  ArrowUpDown,
+  ExternalLink,
+  Logs,
+  MoreHorizontal,
+  RefreshCcw,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Job } from "@/lib/generated/prisma/client";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 export const columns: ColumnDef<Job>[] = [
   {
@@ -52,6 +64,52 @@ export const columns: ColumnDef<Job>[] = [
           Status
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
+      );
+    },
+  },
+  {
+    id: "actions",
+    cell: ({ row }) => {
+      const { id, status } = row.original;
+
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <span className="sr-only">Open</span>
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onSelect={(e) => e.preventDefault()}
+              disabled={status === "PENDING"}
+            >
+              <Logs className="mr-2 h-4 w-4" />
+              Check Logs
+            </DropdownMenuItem>
+
+            <DropdownMenuItem
+              onSelect={(e) => e.preventDefault()}
+              disabled={status === "PENDING" || status === "RUNNING"}
+            >
+              <RefreshCcw className="mr-2 h-4 w-4" />
+              Retry
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onSelect={(e) => e.preventDefault()}
+              disabled={
+                status === "PENDING" ||
+                status === "RUNNING" ||
+                status === "FAILED"
+              }
+            >
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Visit
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       );
     },
   },
