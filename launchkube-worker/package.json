@@ -1,0 +1,22 @@
+{
+  "name": "launchkube-worker",
+  "module": "index.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/node": "^25.9.1",
+    "@types/pg": "^8.20.0",
+    "prisma": "^7.7.0"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@aws-sdk/client-sqs": "^3.1031.0",
+    "@prisma/adapter-pg": "^7.7.0",
+    "@prisma/client": "^7.7.0",
+    "dotenv": "^17.4.2",
+    "pg": "^8.20.0"
+  }
+}

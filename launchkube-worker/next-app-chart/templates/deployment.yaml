@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-dep
+  namespace: {{ .Release.Namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          volumeMounts:
+          - name: env-file
+            readOnly: true
+            mountPath: "/app/.env"
+            subPath: .env
+          resources:
+            requests:
+              cpu: "100m"
+            limits:
+              cpu: "500m"
+      volumes:
+      - name: env-file
+        secret:
+          secretName: {{ .Release.Name }}-secret
