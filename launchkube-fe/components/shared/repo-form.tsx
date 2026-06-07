@@ -1,7 +1,4 @@
 "use client";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
-import * as z from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,24 +9,34 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
+import {
   Field,
-  FieldDescription,
   FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
-import { ChevronDownIcon, MinusIcon } from "lucide-react";
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useSendUrl } from "@/hooks/use-service";
-import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronDownIcon, MinusIcon } from "lucide-react";
+import { Controller, ControllerRenderProps, useForm } from "react-hook-form";
+import * as z from "zod";
 
 const formSchema = z.object({
   repoUrl: z.url("Repo URL needed.").min(1),
+  preset: z.enum(["nextjs", "nodejs"]),
   envVariables: z
     .array(
       z.object({
@@ -44,21 +51,18 @@ const formSchema = z.object({
 });
 
 export function RepoForm() {
-  const { mutate, isPending, isSuccess } = useSendUrl();
-  const router = useRouter();
+  const { mutate, isPending } = useSendUrl();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       repoUrl: "",
+      preset: undefined,
       envVariables: [],
     },
   });
 
   const onSubmit = async (values: z.infer<typeof formSchema>) => {
-    mutate({
-      repoUrl: values.repoUrl,
-      envVariables: values.envVariables,
-    });
+    mutate(values);
   };
 
   const handlePaste = (
@@ -116,6 +120,32 @@ export function RepoForm() {
                     placeholder="Enter your repo url that you want to deploy."
                     autoComplete="off"
                   />
+                  {fieldState.invalid && (
+                    <FieldError errors={[fieldState.error]} />
+                  )}
+                </Field>
+              )}
+            />
+            <Controller
+              name="preset"
+              control={form.control}
+              render={({ field, fieldState }) => (
+                <Field data-invalid={fieldState.invalid}>
+                  <FieldLabel htmlFor="repo-form-title">
+                    Repository Preset
+                  </FieldLabel>
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger aria-invalid={fieldState.invalid}>
+                      <SelectValue placeholder="Select project type" />
+                    </SelectTrigger>
+
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="nextjs">Next.js</SelectItem>
+                        <SelectItem value="nodejs">Node.js</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -202,17 +232,41 @@ export function RepoForm() {
                 />
               </CollapsibleContent>
             </Collapsible>
-            <p className="text-xs text-muted-foreground font-mono px-1">
-              💡 If deploying a Next.js app, add{" "}
-              <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
-                output: &quot;standalone&quot;
-              </code>{" "}
-              to your{" "}
-              <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
-                next.config.ts
-              </code>{" "}
-              for Docker compatibility.
-            </p>
+            {form.watch("preset") === "nextjs" && (
+              <p className="text-xs text-muted-foreground font-mono px-1">
+                💡 If deploying a Next.js app, add{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                  output: &quot;standalone&quot;
+                </code>{" "}
+                to your{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                  next.config.ts
+                </code>{" "}
+                for Docker compatibility.
+              </p>
+            )}
+            {form.watch("preset") === "nodejs" && (
+              <p className="text-xs text-muted-foreground font-mono px-1">
+                💡 For Node.js apps, ensure your{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                  package.json
+                </code>{" "}
+                includes a{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                  build
+                </code>{" "}
+                script and outputs compiled files to{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                  dist/
+                </code>
+                . Your production start command should run the compiled output
+                (for example,{" "}
+                <code className="bg-muted px-1.5 py-0.5 rounded text-xs">
+                  node dist/index.js
+                </code>
+                ).
+              </p>
+            )}
           </FieldGroup>
         </form>
       </CardContent>

@@ -8,7 +8,8 @@ export const appRouter = createTRPCRouter({
   send: protectedProcedure
     .input(
       z.object({
-        repoUrl: z.url(),
+        repoUrl: z.url("Repo URL needed.").min(1),
+        preset: z.enum(["nextjs", "nodejs"]),
         envVariables: z
           .array(
             z.object({
@@ -23,7 +24,7 @@ export const appRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const { repoUrl, envVariables } = input;
+      const { repoUrl, envVariables, preset } = input;
 
       const jobId = crypto.randomUUID();
 
@@ -44,6 +45,7 @@ export const appRouter = createTRPCRouter({
           jobId,
           repoUrl: repoUrl,
           envVariables: envVariables,
+          type: preset,
         }),
       };
 

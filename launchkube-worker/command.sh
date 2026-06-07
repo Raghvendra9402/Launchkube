@@ -7,6 +7,7 @@ set +a
 REPO_URL=$1
 JOB_ID="$2"
 ENV_VARS=$3
+PROJECT_TYPE=$4
 
 REPO_NAME=$(basename "$REPO_URL")
 REPO_NAME=${REPO_NAME%.git}
@@ -30,7 +31,11 @@ else
 fi
 
 echo "📄 Copying Dockerfile..."
-cp ../../docker/Dockerfile ./Dockerfile
+if [ "$PROJECT_TYPE" = "nextjs" ]; then
+  cp ../../docker/nextjs/Dockerfile ./Dockerfile
+else 
+  cp ../../docker/nodejs/Dockerfile ./Dockerfile
+fi
 
 echo "Creating dummy env variables"
 echo "$ENV_VARS" | jq -r '.[] | "\(.key)=dummy"' > .env.build

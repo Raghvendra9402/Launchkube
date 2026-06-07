@@ -16,6 +16,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
+import { useRouter } from "next/navigation";
 
 export const columns: ColumnDef<Job>[] = [
   {
@@ -71,7 +72,7 @@ export const columns: ColumnDef<Job>[] = [
     id: "actions",
     cell: ({ row }) => {
       const { id, status } = row.original;
-
+      const router = useRouter();
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -83,7 +84,7 @@ export const columns: ColumnDef<Job>[] = [
 
           <DropdownMenuContent align="end">
             <DropdownMenuItem
-              onSelect={(e) => e.preventDefault()}
+              onSelect={() => router.push(`/project/${id}`)}
               disabled={status === "PENDING"}
             >
               <Logs className="mr-2 h-4 w-4" />

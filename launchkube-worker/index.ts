@@ -20,6 +20,7 @@ type EnvVarType = {
 async function runCommand(
   repoUrl: string,
   jobId: string,
+  type: string,
   envVariables: EnvVarType[],
 ) {
   return new Promise((resolve, reject) => {
@@ -29,6 +30,7 @@ async function runCommand(
       repoUrl,
       jobId,
       JSON.stringify(envVariables),
+      type,
     ]);
 
     const flush = async () => {
@@ -124,7 +126,12 @@ async function getMessage() {
         });
 
         try {
-          await runCommand(body.repoUrl, body.jobId, body.envVariables);
+          await runCommand(
+            body.repoUrl,
+            body.jobId,
+            body.envVariables,
+            body.type,
+          );
 
           await prisma.job.update({
             where: { id: body.jobId },
